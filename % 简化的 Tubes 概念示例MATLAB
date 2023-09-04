@@ -1,0 +1,65 @@
+% 简化的 Tubes 概念示例
+%这个代码将生成一个简单的示意图，显示了随机生成的节点和基于Delaunay三角剖分的管道拓扑结构。
+% 起始节点用红色方块标记，目标节点用紫色菱形标记。管道用绿色线表示。
+% 定义管道拓扑结构
+numNodes = 15; % 节点数量
+nodes = rand(numNodes, 2); % 随机生成节点坐标
+
+% 创建管道
+edges = delaunay(nodes(:,1), nodes(:,2)); % 使用Delaunay三角剖分创建管道
+
+% 随机选择起始和目标节点
+startNode = randi(numNodes);
+endNode = randi(numNodes);
+
+% 定义基于时间的分离参数
+timeInterval = 5; % 飞机占用节点的时间间隔
+
+% 模拟飞机飞行
+currentNode = startNode;
+while currentNode ~= endNode
+    % 飞机占用当前节点
+    disp(['飞机占用节点 ' num2str(currentNode) '，持续 ' num2str(timeInterval) ' 时间单位']);
+    
+    % 更新下一个节点，以避免冲突
+    nextNode = currentNode;
+    while nextNode == currentNode
+        nextNode = randi(numNodes);
+    end
+    
+    % 等待一段时间，模拟飞行
+    pause(timeInterval);
+    
+    % 更新当前节点
+    currentNode = nextNode;
+end
+
+disp(['飞机到达目标节点 ' num2str(endNode)]);
+
+
+% 绘制节点
+figure;
+scatter(nodes(:,1), nodes(:,2), 'filled', 'MarkerFaceColor', 'b');
+hold on;
+
+% 绘制边
+for i = 1:size(edges, 1)
+    startNode = edges(i, 1);
+    endNode = edges(i, 2);
+    line([nodes(startNode, 1), nodes(endNode, 1)], ...
+         [nodes(startNode, 2), nodes(endNode, 2)], 'Color', 'g');
+end
+
+% 标记起始和目标节点
+scatter(nodes(startNode, 1), nodes(startNode, 2), 100, 'Marker', 's', ...
+    'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r');
+scatter(nodes(endNode, 1), nodes(endNode, 2), 100, 'Marker', 'd', ...
+    'MarkerEdgeColor', 'm', 'MarkerFaceColor', 'm');
+
+% 设置图形属性
+title('Tubes Concept Illustration');
+xlabel('X Coordinate');
+ylabel('Y Coordinate');
+axis equal;
+grid on;
+hold off;
